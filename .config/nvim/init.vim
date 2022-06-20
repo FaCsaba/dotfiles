@@ -1,59 +1,68 @@
-" ---------------------- 
-"  General settings
-" ----------------------
+" ----------------------------------
+" General
+" ----------------------------------
 
-set nocompatible
-set showmatch
-set ignorecase
-set mouse=v
-set hlsearch
-set incsearch
-set tabstop=4
-set softtabstop=4
-set noexpandtab
-set shiftwidth=4
-set autoindent
-set number
-set wildmode=longest,list
-set cc=80
-filetype plugin indent on
-syntax on
-set clipboard=unnamedplus
-set ttyfast
-set path=.,,**
-set relativenumber
+:set number
+:set relativenumber
+:set smarttab
+:set tabstop=4
+:set shiftwidth=4
+:set softtabstop=4
+:set autoindent
+:set encoding=UTF-8
+:set cc=80
+:set nohlsearch
+:set splitbelow          " Horizontal split below current.
+:set splitright          " Vertical split to right of current.
 
-let mapleader=' '
+let mapleader = ' '
 
-" ----------------------
+" ----------------------------------
 "  Plugins
-" ----------------------
+" ----------------------------------
 
 call plug#begin()
-Plug 'preservim/nerdtree'
-Plug 'ryanoasis/vim-devicons'
-Plug 'kyazdani42/nvim-web-devicons'
-Plug 'nvim-treesitter/nvim-treesitter'
-Plug 'honza/vim-snippets'
-Plug 'mhinz/vim-startify'
-Plug 'neovim/nvim-lspconfig'
+
+" Look
+Plug 'https://github.com/vim-airline/vim-airline'
+Plug 'https://github.com/rafi/awesome-vim-colorschemes'
+
+" LSP
 Plug 'williamboman/nvim-lsp-installer'
-Plug 'sainnhe/gruvbox-material'
-Plug 'akinsho/toggleterm.nvim'
+Plug 'https://github.com/neovim/nvim-lspconfig'
+Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
+
+" Telescope / fuzzy finder
+Plug 'nvim-lua/popup.nvim'
 Plug 'nvim-lua/plenary.nvim'
 Plug 'nvim-telescope/telescope.nvim'
+  
+" cmp plugins
+Plug 'hrsh7th/cmp-buffer' " buffer completions
+Plug 'hrsh7th/cmp-path' " path completions
+Plug 'hrsh7th/cmp-cmdline' " cmdline completions
+Plug 'saadparwaiz1/cmp_luasnip' " snippet completions
+Plug 'hrsh7th/cmp-nvim-lsp'
+Plug 'hrsh7th/nvim-cmp'
+
+" snippets
+Plug 'L3MON4D3/LuaSnip' "snippet engine
+Plug 'rafamadriz/friendly-snippets' " a bunch of snippets to use
+
+" Tabs
 Plug 'nvim-lualine/lualine.nvim'
 Plug 'kdheepak/tabline.nvim'
+
 call plug#end()
 
-colorscheme gruvbox-material
-
-" ----------------------
-"  Lua requires
-" ----------------------
+" ----------------------------------
+"  Lua
+" ----------------------------------
 
 lua << EOF
-require("tt")
+require('lsp')
+require('autocompletion')
+require('treesitter')
 require("lualine").setup {}
 require("tabline").setup {
     enable=false
@@ -68,31 +77,24 @@ require("lualine").setup {
     lualine_z = {},
     }
 }
-lspinstaller = require("nvim-lsp-installer")
-lspinstaller.setup {}
-as = lspinstaller.get_installed_servers()
-for k,v in ipairs(as) do
-	vim.pretty_print(v.name)
-	require("lspconfig")[v.name].setup {}
-end
 EOF
 
-" ----------------------
-"  Keymapping
-" ----------------------
+" ----------------------------------
+"  Mappings
+" ----------------------------------
 
-" Use ctrl-[hjkl] to select the active split!
-nmap <silent> <c-k> :wincmd k<CR>
-nmap <silent> <c-j> :wincmd j<CR>
-nmap <silent> <c-h> :wincmd h<CR>
-nmap <silent> <c-> :wincmd l<CR>
+autocmd BufWritePre *.rs lua vim.lsp.buf.formatting_sync(nil, 100)
+autocmd BufWritePre *.js lua vim.lsp.buf.formatting_sync(nil, 100)
+autocmd BufWritePre *.ts lua vim.lsp.buf.formatting_sync(nil, 100)
 
-" Tab behaviour
-nmap <silent> <tab> :TablineBufferNext<CR> 
-nmap <silent> <s-tab> :TablineBufferPrevious<CR>
+nnoremap <LEADER><LEADER> <cmd>Telescope live_grep theme=ivy<cr>
+nnoremap <LEADER>fg <cmd>Telescope buffers<cr>
 
-" Telescope
-nmap <silent> <leader><leader> :Telescope current_buffer_fuzzy_find<CR> 
+" ----------------------------------
+"  Colorscheme
+" ----------------------------------
 
-" NERDTree
-nmap <silent> <leader><esc> :NERDTreeToggle<CR>
+set termguicolors
+let ayucolor="mirage"
+colorscheme ayu
+

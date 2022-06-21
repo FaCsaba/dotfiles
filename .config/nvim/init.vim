@@ -24,18 +24,22 @@ let mapleader = ' '
 call plug#begin()
 
 " Look
-Plug 'https://github.com/vim-airline/vim-airline'
 Plug 'https://github.com/rafi/awesome-vim-colorschemes'
+Plug 'morhetz/gruvbox'
+Plug 'sainnhe/gruvbox-material'
+Plug 'kyazdani42/nvim-web-devicons'
+Plug 'ryanoasis/vim-devicons'
 
 " LSP
 Plug 'williamboman/nvim-lsp-installer'
 Plug 'https://github.com/neovim/nvim-lspconfig'
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 
-" Telescope / fuzzy finder
+" Telescope / fuzzy finder / navigation
 Plug 'nvim-lua/popup.nvim'
 Plug 'nvim-lua/plenary.nvim'
 Plug 'nvim-telescope/telescope.nvim'
+Plug 'preservim/nerdtree'
   
 " cmp plugins
 Plug 'hrsh7th/cmp-buffer' " buffer completions
@@ -53,6 +57,9 @@ Plug 'rafamadriz/friendly-snippets' " a bunch of snippets to use
 Plug 'nvim-lualine/lualine.nvim'
 Plug 'kdheepak/tabline.nvim'
 
+" Terminal
+Plug 'akinsho/toggleterm.nvim'
+
 call plug#end()
 
 " ----------------------------------
@@ -63,18 +70,22 @@ lua << EOF
 require('lsp')
 require('autocompletion')
 require('treesitter')
-require("lualine").setup {}
-require("tabline").setup {
-    enable=false
+require('toggleterm').setup {
+   open_mapping = [[`]],
+   hide_numbers = true,
+   start_in_insert = true,
+   shell = '/bin/zsh',
+   direction = 'float'
 }
-require("lualine").setup {
-  tabline = {
-    lualine_a = {},
-    lualine_b = {},
-    lualine_c = { require'tabline'.tabline_buffers },
-    lualine_x = { require'tabline'.tabline_tabs },
-    lualine_y = {},
-    lualine_z = {},
+require('tabline').setup {enable=false}
+require('lualine').setup {
+	tabline = {
+		lualine_a = {},
+		lualine_b = {},
+		lualine_c = { require'tabline'.tabline_buffers },
+		lualine_x = { require'tabline'.tabline_tabs },
+		lualine_y = {},
+		lualine_z = {},
     }
 }
 EOF
@@ -87,8 +98,18 @@ autocmd BufWritePre *.rs lua vim.lsp.buf.formatting_sync(nil, 100)
 autocmd BufWritePre *.js lua vim.lsp.buf.formatting_sync(nil, 100)
 autocmd BufWritePre *.ts lua vim.lsp.buf.formatting_sync(nil, 100)
 
-nnoremap <LEADER><LEADER> <cmd>Telescope live_grep theme=ivy<cr>
+nnoremap <LEADER><LEADER> <cmd>Telescope live_grep<cr>
 nnoremap <LEADER>fg <cmd>Telescope buffers<cr>
+
+nmap <C-h> <C-W>h
+nmap <C-j> <C-W>j
+nmap <C-k> <C-W>k
+nmap <C-l> <C-W>l
+
+nmap <silent> <Tab> <cmd>TablineBufferNext<cr>
+nmap <silent> <S-Tab> <cmd>TablineBufferPrevious<cr>
+
+nnoremap <LEADER>n <cmd>NERDTreeToggle<cr>
 
 " ----------------------------------
 "  Colorscheme
@@ -96,5 +117,5 @@ nnoremap <LEADER>fg <cmd>Telescope buffers<cr>
 
 set termguicolors
 let ayucolor="mirage"
-colorscheme ayu
+colorscheme gruvbox-material
 
